@@ -30,7 +30,7 @@ flowchart TD
 
 **Control flow:** Truncate tables → Load staging → Validate and load clean → Write run log
 
-![Control flow](docs/01_control_flow.png)
+![Control flow](01_control_flow.png)
 
 ---
 
@@ -46,9 +46,9 @@ Every row is accounted for. Row counts are captured at each stage and written to
 
 **192 = 191 + 1.** The single rejected row is the national `TOTAL` summary row. It is excluded on purpose so that it isn't double-counted, and it is logged with the reason *"Summary TOTAL row excluded"*.
 
-![Data flow, top](docs/02a_data_flow.png)
-![Data flow, bottom](docs/02b_data_flow.png)
-![Run log](docs/03_run_log.png)
+![Data flow, top](02a_data_flow.png)
+![Data flow, bottom](02b_data_flow.png)
+![Run log](03_run_log.png)
 
 ---
 
@@ -79,30 +79,29 @@ An SSRS report with a multi-select **Region** parameter, a matrix of attendances
 
 *September 2026. All seven regions were below the 95% constitutional standard.*
 
-![Report](docs/04_report.png)
+![Report](04_report.png)
 
-Full export: [docs/AE_4hr_report.pdf](docs/AE_4hr_report.pdf)
+Full export: [AE_4hr_report.pdf](AE_4hr_report.pdf)
 
 ---
 
-## Repository structure
+## Repository files
 
-```
-sql/
-  02_rebuild_tables.sql      staging, clean, error and run-log tables
-  03_alter_runlog.sql        RunID stored as text (SSIS passes the GUID as a string)
-  04_check_run_log.sql       reconciliation query for the latest run
-AE_ETL/Package.dtsx          SSIS package
-AE_Reports/AE_4hr_Performance.rdl   SSRS report
-docs/                        screenshots and PDF export
-```
+| File | Purpose |
+|---|---|
+| `02_rebuild_tables.sql` | Staging, clean, error and run-log tables |
+| `03_alter_runlog.sql` | RunID stored as text (SSIS passes the GUID as a string) |
+| `04_check_run_log.sql` | Reconciliation query for the latest run |
+| `Package.dtsx` | SSIS package |
+| `AE_4hr_Performance.rdl` | SSRS report |
+| `*.png`, `AE_4hr_report.pdf` | Screenshots and report export |
 
 ## How to run
 
-1. Create a database `NHS_AE` in SQL Server 2022 and run the scripts in `sql/` in order.
+1. Create a database `NHS_AE` in SQL Server 2022 and run the `.sql` scripts in number order.
 2. Download a monthly provider-level A&E CSV from NHS England and save it as `C:\ssis-ae\data\ae_2026_09.csv`, or update the `FF_AE_CSV` connection manager to point at your file.
 3. Open the package in Visual Studio 2022 with the *SQL Server Integration Services Projects* extension, check that `localhost.NHS_AE` points to your server, and run it (F5).
-4. Check the reconciliation with `sql/04_check_run_log.sql`.
+4. Check the reconciliation with `04_check_run_log.sql`.
 5. Open the report in a Report Server Project, point the shared data source at your server, and preview it.
 
 ## Possible extensions
